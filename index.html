@@ -163,7 +163,7 @@
 <body>
 
 <!-- SIGN UP -->
-<div class="screen active" id="screen-signup">
+<div class="screen" id="screen-signup" style="display:none!important">
   <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
   <div class="auth-container">
     <h2>Create Account</h2>
@@ -177,7 +177,7 @@
 </div>
 
 <!-- LOGIN -->
-<div class="screen" id="screen-login">
+<div class="screen" id="screen-login" style="display:none!important">
   <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
   <div class="auth-container">
     <h2>Welcome Back</h2>
@@ -190,7 +190,7 @@
 </div>
 
 <!-- HOME -->
-<div class="screen" id="screen-home">
+<div class="screen active" id="screen-home">
   <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
   
   <input class="timer-name" id="timerLabel" placeholder="✏️ Name your timer (optional)">
@@ -273,7 +273,7 @@
 <!-- BOTTOM NAV -->
 <div class="bottom-nav" id="bottomNav" style="display:none;">
   <button class="active" onclick="navTo('home',this)"><span class="icon">⏱</span>Timer</button>
-  <button onclick="navTo('profile',this)"><span class="icon">👤</span>Profile</button>
+  <!-- Profile removed - no signup needed -->
 </div>
 
 <!-- CONFETTI CONTAINER -->
@@ -537,7 +537,9 @@ function toggleTheme() {
 
 // ===== INIT =====
 if (localStorage.getItem('tc_theme') === 'light') document.body.classList.add('light');
-if (user) enterApp();
+// Auto-enter app without signup
+user = user || { name: 'User', email: '' };
+enterApp();
 
 // Register service worker
 if ('serviceWorker' in navigator) {

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f0f1a">
+<meta name="description" content="Control time speed. Make hours feel like minutes or minutes feel like hours.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+<link rel="apple-touch-icon" href="icon-192x192.png">
+<title>Time Control</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --bg: #0f0f1a;
+    --surface: #1a1a2e;
+    --surface2: #222240;
+    --accent: #6c5ce7;
+    --accent2: #a29bfe;
+    --green: #00e676;
+    --red: #ff5252;
+    --yellow: #ffd740;
+    --text: #f0f0f0;
+    --text2: #8888aa;
+    --radius: 16px;
+  }
+  
+  .light {
+    --bg: #f5f5fa;
+    --surface: #ffffff;
+    --surface2: #e8e8f0;
+    --text: #1a1a2e;
+    --text2: #666680;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.3s, color 0.3s;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; }
+  .nav h1 { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-btns { display: flex; gap: 8px; }
+  .nav-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--surface); color: var(--text); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  /* SCREENS */
+  .screen { display: none; flex: 1; flex-direction: column; padding: 0 20px 100px; animation: fadeIn 0.3s ease; }
+  .screen.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* AUTH SCREENS */
+  .auth-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; max-width: 360px; margin: 0 auto; width: 100%; }
+  .auth-container h2 { font-size: 2rem; font-weight: 800; text-align: center; }
+  .auth-container p { color: var(--text2); text-align: center; font-size: 0.9rem; }
+  .auth-input { width: 100%; padding: 14px 16px; background: var(--surface); border: 2px solid var(--surface2); border-radius: 12px; color: var(--text); font-size: 1rem; font-family: inherit; outline: none; transition: border 0.2s; }
+  .auth-input:focus { border-color: var(--accent); }
+  .auth-input::placeholder { color: var(--text2); }
+  .auth-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; border-radius: 12px; color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.1s; }
+  .auth-btn:active { transform: scale(0.97); }
+  .auth-link { color: var(--accent2); font-size: 0.85rem; cursor: pointer; text-decoration: underline; }
+
+  /* HOME / TIMER */
+  .timer-section { text-align: center; margin-top: 20px; }
+  .timer-label { font-size: 0.75rem; color: var(--text2); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+  
+  .time-inputs { display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 24px; }
+  .time-unit { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .time-unit label { font-size: 0.6rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
+  .time-val { width: 68px; height: 72px; background: var(--surface); border: 2px solid var(--surface2); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 700; color: var(--text); text-align: center; outline: none; -moz-appearance: textfield; }
+  .time-val::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .time-val:focus { border-color: var(--accent); }
+  .time-sep { font-size: 2rem; font-weight: 700; color: var(--text2); margin: 0 2px; padding-top: 16px; }
+
+  /* SPEED CONTROL */
+  .speed-section { background: var(--surface); border-radius: var(--radius); padding: 20px; margin: 16px 0; }
+  .speed-section h3 { font-size: 0.8rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; text-align: center; }
+  .speed-input-wrap { display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .speed-adj-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--surface2); background: var(--bg); color: var(--text); font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .speed-adj-btn:active { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(0.9); }
+  .speed-val { width: 120px; height: 50px; background: var(--bg); border: 2px solid var(--accent); border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; color: var(--accent2); text-align: center; outline: none; }
+  .speed-val:focus { border-color: var(--accent2); }
+
+  /* RESULT */
+  .result-section { background: linear-gradient(135deg, var(--accent)15, var(--accent2)10); border: 1px solid var(--accent)40; border-radius: var(--radius); padding: 20px; margin: 16px 0; text-align: center; }
+  .result-section h3 { font-size: 0.75rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .result-time { font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; font-weight: 800; color: var(--text); }
+  .result-desc { font-size: 0.85rem; color: var(--text2); margin-top: 8px; line-height: 1.5; }
+  .result-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-top: 8px; }
+  .badge-slow { background: var(--green)20; color: var(--green); }
+  .badge-fast { background: var(--red)20; color: var(--red); }
+  .badge-normal { background: var(--yellow)20; color: var(--yellow); }
+
+  /* TIMER DISPLAY */
+  .timer-display { font-family: 'JetBrains Mono', monospace; font-size: 3.5rem; font-weight: 800; letter-spacing: 2px; margin: 24px 0; color: var(--text); }
+  .timer-display.running { color: var(--green); }
+  .timer-display.paused { color: var(--yellow); }
+
+  /* COUNTDOWN */
+  .timer-display.countdown { font-size: 2.8rem; color: var(--red); opacity: 0.7; }
+  .timer-display.countdown.running { color: var(--red); opacity: 1; }
+  .timer-display.countdown.done { color: var(--green); opacity: 1; }
+  .countdown-bar-wrap { width: 80%; max-width: 320px; height: 6px; background: var(--surface2); border-radius: 3px; margin: 8px auto 4px; overflow: hidden; }
+  .countdown-bar { height: 100%; background: linear-gradient(90deg, var(--red), var(--yellow), var(--green)); border-radius: 3px; width: 100%; transition: width 0.2s; }
+  .countdown-info { font-size: 0.75rem; color: var(--text2); text-align: center; margin-top: 4px; }
+
+  /* CONTROLS */
+  .controls { display: flex; gap: 12px; justify-content: center; margin: 20px 0; }
+  .ctrl-btn { flex: 1; max-width: 140px; padding: 14px; border-radius: 14px; border: none; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .ctrl-btn:active { transform: scale(0.95); }
+  .btn-start { background: var(--green); color: #000; }
+  .btn-pause { background: var(--yellow); color: #000; }
+  .btn-reset { background: var(--surface2); color: var(--text); }
+
+  /* MODE SELECTOR */
+  .mode-selector { display: flex; gap: 8px; margin: 16px 0; }
+  .mode-btn { flex: 1; padding: 12px 8px; background: var(--surface); border: 2px solid var(--surface2); border-radius: 12px; color: var(--text2); font-size: 0.8rem; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.15s; font-family: inherit; }
+  .mode-btn.active { border-color: var(--accent); color: var(--accent2); background: var(--accent)15; }
+
+  /* TIMER LABEL */
+  .timer-name { width: 100%; padding: 12px 16px; background: var(--surface); border: 2px solid var(--surface2); border-radius: 12px; color: var(--text); font-size: 0.9rem; font-family: inherit; outline: none; text-align: center; margin: 8px 0; }
+  .timer-name:focus { border-color: var(--accent); }
+  .timer-name::placeholder { color: var(--text2); }
+
+  /* BOTTOM NAV */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--surface2); display: flex; justify-content: space-around; padding: 10px 0 max(10px, env(safe-area-inset-bottom)); z-index: 100; }
+  .bottom-nav button { background: none; border: none; color: var(--text2); font-size: 0.7rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 12px; font-family: inherit; transition: color 0.15s; }
+  .bottom-nav button.active { color: var(--accent2); }
+  .bottom-nav button .icon { font-size: 1.3rem; }
+
+  /* PROFILE */
+  .profile-header { text-align: center; margin: 30px 0; }
+  .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 12px; }
+  .profile-name { font-size: 1.3rem; font-weight: 700; }
+  .profile-email { font-size: 0.85rem; color: var(--text2); }
+  .profile-stats { display: flex; gap: 16px; justify-content: center; margin: 20px 0; }
+  .stat { background: var(--surface); border-radius: 12px; padding: 16px 20px; text-align: center; flex: 1; }
+  .stat-val { font-size: 1.5rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  .stat-label { font-size: 0.7rem; color: var(--text2); margin-top: 4px; }
+  .logout-btn { width: 100%; padding: 14px; background: var(--surface); border: 2px solid var(--red); border-radius: 12px; color: var(--red); font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 20px; font-family: inherit; }
+
+  /* CONFETTI */
+  .confetti-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 999; overflow: hidden; }
+  .confetti { position: absolute; width: 10px; height: 10px; border-radius: 2px; top: -10px; animation: confettiFall 3s ease-out forwards; }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIGN UP -->
+<div class="screen active" id="screen-signup">
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
+  <div class="auth-container">
+    <h2>Create Account</h2>
+    <p>Control how time feels</p>
+    <input class="auth-input" id="signupName" placeholder="Your name">
+    <input class="auth-input" id="signupEmail" placeholder="Email" type="email">
+    <input class="auth-input" id="signupPass" placeholder="Password" type="password">
+    <button class="auth-btn" onclick="signUp()">Sign Up</button>
+    <span class="auth-link" onclick="showScreen('login')">Already have an account? Log in</span>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="screen" id="screen-login">
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
+  <div class="auth-container">
+    <h2>Welcome Back</h2>
+    <p>Pick up where you left off</p>
+    <input class="auth-input" id="loginEmail" placeholder="Email" type="email">
+    <input class="auth-input" id="loginPass" placeholder="Password" type="password">
+    <button class="auth-btn" onclick="logIn()">Log In</button>
+    <span class="auth-link" onclick="showScreen('signup')">Don't have an account? Sign up</span>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="screen" id="screen-home">
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
+  
+  <input class="timer-name" id="timerLabel" placeholder="✏️ Name your timer (optional)">
+  
+  <div class="timer-section">
+    <div class="timer-label">Set Your Time</div>
+    <div class="time-inputs">
+      <div class="time-unit"><input class="time-val" id="inH" type="number" min="0" max="24" value="0" oninput="calculate()"><label>Hours</label></div>
+      <span class="time-sep">:</span>
+      <div class="time-unit"><input class="time-val" id="inM" type="number" min="0" max="59" value="10" oninput="calculate()"><label>Min</label></div>
+      <span class="time-sep">:</span>
+      <div class="time-unit"><input class="time-val" id="inS" type="number" min="0" max="59" value="0" oninput="calculate()"><label>Sec</label></div>
+    </div>
+  </div>
+
+  <!-- MODE SELECTOR -->
+  <div class="mode-selector">
+    <button class="mode-btn" onclick="setMode('slow')" id="mode-slow">🐢 Slow Down</button>
+    <button class="mode-btn active" onclick="setMode('normal')" id="mode-normal">⏱️ Normal</button>
+    <button class="mode-btn" onclick="setMode('fast')" id="mode-fast">⚡ Speed Up</button>
+  </div>
+
+  <!-- SPEED CONTROL -->
+  <div class="speed-section">
+    <h3>Seconds per second</h3>
+    <div class="speed-input-wrap">
+      <button class="speed-adj-btn" onclick="adjustSpeed(-0.1)">−</button>
+      <input class="speed-val" id="speedFactor" type="number" min="0.01" max="600" step="0.1" value="1" oninput="calculate()">
+      <button class="speed-adj-btn" onclick="adjustSpeed(0.1)">+</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-section">
+    <h3>Experience Time</h3>
+    <div class="result-time" id="resultTime">0h 10m 0s</div>
+    <div id="resultBadge"></div>
+    <div class="result-desc" id="resultDesc">Your 10 minutes will feel like 10 minutes.</div>
+  </div>
+
+  <!-- TIMER DISPLAY -->
+  <div class="timer-section">
+    <div class="timer-label">Timer</div>
+    <div class="timer-display" id="timerDisplay">00:00:00</div>
+  </div>
+
+  <!-- COUNTDOWN TIMER -->
+  <div class="timer-section">
+    <div class="timer-label">Time Remaining</div>
+    <div class="timer-display countdown" id="countdownDisplay">00:00:00</div>
+    <div class="countdown-bar-wrap" id="countdownBarWrap" style="display:none;">
+      <div class="countdown-bar" id="countdownBar"></div>
+    </div>
+    <div class="countdown-info" id="countdownInfo"></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="ctrl-btn btn-start" id="btnStart" onclick="startTimer()">▶ Start</button>
+    <button class="ctrl-btn btn-pause" id="btnPause" onclick="pauseTimer()" style="display:none;">⏸ Pause</button>
+    <button class="ctrl-btn btn-reset" onclick="resetTimer()">↺ Reset</button>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="screen" id="screen-profile">
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
+  <div class="profile-header">
+    <div class="avatar" id="profileAvatar">👤</div>
+    <div class="profile-name" id="profileName">User</div>
+    <div class="profile-email" id="profileEmail">user@email.com</div>
+  </div>
+  <div class="profile-stats">
+    <div class="stat"><div class="stat-val" id="statTimers">0</div><div class="stat-label">Timers Run</div></div>
+    <div class="stat"><div class="stat-val" id="statTime">0m</div><div class="stat-label">Time Controlled</div></div>
+  </div>
+  <button class="logout-btn" onclick="logOut()">Log Out</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottomNav" style="display:none;">
+  <button class="active" onclick="navTo('home',this)"><span class="icon">⏱</span>Timer</button>
+  <button onclick="navTo('profile',this)"><span class="icon">👤</span>Profile</button>
+</div>
+
+<!-- CONFETTI CONTAINER -->
+<div class="confetti-container" id="confettiBox"></div>
+
+<script>
+// ===== STATE =====
+let user = JSON.parse(localStorage.getItem('tc_user') || 'null');
+let timerInterval = null;
+let elapsedReal = 0;
+let isRunning = false;
+let timersRun = parseInt(localStorage.getItem('tc_timers') || '0');
+let totalControlled = parseFloat(localStorage.getItem('tc_total') || '0');
+let currentMode = 'normal';
+
+// ===== AUTH =====
+function signUp() {
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  if (!name || !email) return;
+  user = { name, email };
+  localStorage.setItem('tc_user', JSON.stringify(user));
+  enterApp();
+}
+
+function logIn() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) return;
+  user = JSON.parse(localStorage.getItem('tc_user') || 'null') || { name: email.split('@')[0], email };
+  localStorage.setItem('tc_user', JSON.stringify(user));
+  enterApp();
+}
+
+function logOut() {
+  localStorage.removeItem('tc_user');
+  user = null;
+  document.getElementById('bottomNav').style.display = 'none';
+  showScreen('signup');
+}
+
+function enterApp() {
+  document.getElementById('bottomNav').style.display = 'flex';
+  document.getElementById('profileName').textContent = user.name;
+  document.getElementById('profileEmail').textContent = user.email;
+  document.getElementById('profileAvatar').textContent = user.name[0].toUpperCase();
+  document.getElementById('statTimers').textContent = timersRun;
+  document.getElementById('statTime').textContent = Math.round(totalControlled) + 'm';
+  showScreen('home');
+  calculate();
+}
+
+// ===== NAVIGATION =====
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+}
+
+function navTo(name, btn) {
+  document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  showScreen(name);
+}
+
+// ===== MODE =====
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode-' + mode).classList.add('active');
+  
+  const sf = document.getElementById('speedFactor');
+  if (mode === 'slow') sf.value = '2';
+  else if (mode === 'normal') sf.value = '1';
+  else if (mode === 'fast') sf.value = '0.5';
+  calculate();
+}
+
+function adjustSpeed(delta) {
+  const sf = document.getElementById('speedFactor');
+  let val = parseFloat(sf.value) + delta;
+  val = Math.max(0.01, Math.min(600, Math.round(val * 100) / 100));
+  sf.value = val;
+  calculate();
+}
+
+// ===== CALCULATION =====
+function calculate() {
+  const h = parseInt(document.getElementById('inH').value) || 0;
+  const m = parseInt(document.getElementById('inM').value) || 0;
+  const s = parseInt(document.getElementById('inS').value) || 0;
+  const speed = parseFloat(document.getElementById('speedFactor').value) || 1;
+  
+  const totalRealSeconds = h * 3600 + m * 60 + s;
+  const experienceSeconds = totalRealSeconds * speed;
+  
+  // Format experience time
+  const eH = Math.floor(experienceSeconds / 3600);
+  const eM = Math.floor((experienceSeconds % 3600) / 60);
+  const eS = Math.round(experienceSeconds % 60);
+  
+  document.getElementById('resultTime').textContent = 
+    (eH > 0 ? eH + 'h ' : '') + eM + 'm ' + eS + 's';
+  
+  // Description
+  const realStr = formatDuration(totalRealSeconds);
+  const expStr = formatDuration(experienceSeconds);
+  
+  let desc, badge;
+  if (speed > 1) {
+    desc = `Your ${realStr} will feel like ${expStr}. Time stretches — you gain seconds.`;
+    badge = '<span class="result-badge badge-slow">🐢 Time Stretched</span>';
+  } else if (speed < 1) {
+    desc = `Your ${realStr} will feel like ${expStr}. Time compresses — seconds fly by.`;
+    badge = '<span class="result-badge badge-fast">⚡ Time Compressed</span>';
+  } else {
+    desc = `Your ${realStr} will feel like ${expStr}. Normal speed.`;
+    badge = '<span class="result-badge badge-normal">⏱️ Normal</span>';
+  }
+  
+  document.getElementById('resultDesc').textContent = desc;
+  document.getElementById('resultBadge').innerHTML = badge;
+}
+
+function formatDuration(secs) {
+  if (secs >= 3600) return Math.round(secs / 360) / 10 + ' hours';
+  if (secs >= 60) return Math.round(secs / 6) / 10 + ' minutes';
+  return Math.round(secs * 10) / 10 + ' seconds';
+}
+
+// ===== TIMER =====
+function startTimer() {
+  if (isRunning) return;
+  isRunning = true;
+  document.getElementById('btnStart').style.display = 'none';
+  document.getElementById('btnPause').style.display = 'block';
+  
+  const speed = parseFloat(document.getElementById('speedFactor').value) || 1;
+  const h = parseInt(document.getElementById('inH').value) || 0;
+  const m = parseInt(document.getElementById('inM').value) || 0;
+  const s = parseInt(document.getElementById('inS').value) || 0;
+  const targetReal = h * 3600 + m * 60 + s;
+  
+  const display = document.getElementById('timerDisplay');
+  const countdown = document.getElementById('countdownDisplay');
+  const countdownBar = document.getElementById('countdownBar');
+  const countdownBarWrap = document.getElementById('countdownBarWrap');
+  const countdownInfo = document.getElementById('countdownInfo');
+  display.className = 'timer-display running';
+  countdown.className = 'timer-display countdown running';
+  countdownBarWrap.style.display = 'block';
+  
+  const totalExperienceTarget = targetReal * speed;
+  
+  const startTime = Date.now() - (elapsedReal * 1000);
+  
+  timerInterval = setInterval(() => {
+    elapsedReal = (Date.now() - startTime) / 1000;
+    const experienced = elapsedReal * speed;
+    
+    // Count UP display
+    const dH = Math.floor(experienced / 3600);
+    const dM = Math.floor((experienced % 3600) / 60);
+    const dS = Math.floor(experienced % 60);
+    
+    display.textContent = 
+      String(dH).padStart(2, '0') + ':' + 
+      String(dM).padStart(2, '0') + ':' + 
+      String(dS).padStart(2, '0');
+    
+    // Count DOWN display
+    const remaining = Math.max(0, totalExperienceTarget - experienced);
+    const rH = Math.floor(remaining / 3600);
+    const rM = Math.floor((remaining % 3600) / 60);
+    const rS = Math.floor(remaining % 60);
+    
+    countdown.textContent = 
+      String(rH).padStart(2, '0') + ':' + 
+      String(rM).padStart(2, '0') + ':' + 
+      String(rS).padStart(2, '0');
+    
+    // Progress bar (fills from left as time passes)
+    const progress = totalExperienceTarget > 0 ? Math.min(100, (experienced / totalExperienceTarget) * 100) : 0;
+    countdownBar.style.width = (100 - progress) + '%';
+    
+    // Info text
+    const pct = Math.round(progress);
+    countdownInfo.textContent = pct + '% complete — ' + formatDuration(remaining) + ' remaining';
+    
+    // Check completion
+    if (experienced >= totalExperienceTarget) {
+      clearInterval(timerInterval);
+      isRunning = false;
+      display.className = 'timer-display';
+      countdown.className = 'timer-display countdown done';
+      countdown.textContent = '00:00:00';
+      countdownBar.style.width = '0%';
+      countdownInfo.textContent = '✅ Complete!';
+      document.getElementById('btnStart').style.display = 'block';
+      document.getElementById('btnPause').style.display = 'none';
+      
+      // Stats
+      timersRun++;
+      totalControlled += targetReal / 60;
+      localStorage.setItem('tc_timers', timersRun);
+      localStorage.setItem('tc_total', totalControlled);
+      document.getElementById('statTimers').textContent = timersRun;
+      document.getElementById('statTime').textContent = Math.round(totalControlled) + 'm';
+      
+      // Confetti!
+      launchConfetti();
+    }
+  }, 50);
+}
+
+function pauseTimer() {
+  clearInterval(timerInterval);
+  isRunning = false;
+  document.getElementById('timerDisplay').className = 'timer-display paused';
+  document.getElementById('countdownDisplay').className = 'timer-display countdown';
+  document.getElementById('btnStart').style.display = 'block';
+  document.getElementById('btnPause').style.display = 'none';
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  isRunning = false;
+  elapsedReal = 0;
+  document.getElementById('timerDisplay').textContent = '00:00:00';
+  document.getElementById('timerDisplay').className = 'timer-display';
+  document.getElementById('countdownDisplay').textContent = '00:00:00';
+  document.getElementById('countdownDisplay').className = 'timer-display countdown';
+  document.getElementById('countdownBar').style.width = '100%';
+  document.getElementById('countdownBarWrap').style.display = 'none';
+  document.getElementById('countdownInfo').textContent = '';
+  document.getElementById('btnStart').style.display = 'block';
+  document.getElementById('btnPause').style.display = 'none';
+}
+
+// ===== CONFETTI =====
+function launchConfetti() {
+  const box = document.getElementById('confettiBox');
+  const colors = ['#6c5ce7','#a29bfe','#00e676','#ffd740','#ff5252','#00b0ff','#ff6090','#ffab40'];
+  for (let i = 0; i < 80; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.width = (Math.random() * 8 + 5) + 'px';
+    c.style.height = (Math.random() * 8 + 5) + 'px';
+    c.style.animationDelay = Math.random() * 2 + 's';
+    c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    box.appendChild(c);
+  }
+  setTimeout(() => { box.innerHTML = ''; }, 5000);
+}
+
+// ===== THEME =====
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  localStorage.setItem('tc_theme', document.body.classList.contains('light') ? 'light' : 'dark');
+}
+
+// ===== INIT =====
+if (localStorage.getItem('tc_theme') === 'light') document.body.classList.add('light');
+if (user) enterApp();
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(() => console.log('SW registered'));
+}
+</script>
+</body>
+</html>

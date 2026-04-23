@@ -207,12 +207,6 @@
   </div>
 
   <!-- MODE SELECTOR -->
-  <div class="mode-selector">
-    <button class="mode-btn" onclick="setMode('slow')" id="mode-slow">🐢 Slow Down</button>
-    <button class="mode-btn active" onclick="setMode('normal')" id="mode-normal">⏱️ Normal</button>
-    <button class="mode-btn" onclick="setMode('fast')" id="mode-fast">⚡ Speed Up</button>
-  </div>
-
   <!-- SPEED CONTROL -->
   <div class="speed-section">
     <h3>Seconds per second</h3>
@@ -338,19 +332,6 @@ function navTo(name, btn) {
   showScreen(name);
 }
 
-// ===== MODE =====
-function setMode(mode) {
-  currentMode = mode;
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('mode-' + mode).classList.add('active');
-  
-  const sf = document.getElementById('speedFactor');
-  if (mode === 'slow') sf.value = '2';
-  else if (mode === 'normal') sf.value = '1';
-  else if (mode === 'fast') sf.value = '0.5';
-  calculate();
-}
-
 function adjustSpeed(delta) {
   const sf = document.getElementById('speedFactor');
   let val = parseFloat(sf.value) + delta;
@@ -383,14 +364,14 @@ function calculate() {
   
   let desc, badge, feelDesc;
   if (speed > 1) {
-    desc = `Your ${realStr} will feel like ${expStr}. Time stretches — you gain seconds.`;
-    badge = '<span class="result-badge badge-slow">🐢 Time Stretched</span>';
-    feelDesc = `Each real second displays as ${speed} seconds — time feels ${speed}× slower. 1 real minute = ${Math.round(speed * 60)}s displayed.`;
+    desc = `Your ${realStr} will feel like ${expStr}. Time is SPED UP — the timer counts ${speed}s for every real second.`;
+    badge = '<span class="result-badge badge-fast">⚡ Time Sped Up ×' + speed + '</span>';
+    feelDesc = `Every 1 real second → ${speed} displayed seconds. You experience ${speed}× more time.`;
   } else if (speed < 1) {
-    desc = `Your ${realStr} will feel like ${expStr}. Time compresses — seconds fly by.`;
-    badge = '<span class="result-badge badge-fast">⚡ Time Compressed</span>';
-    const speedupFactor = Math.round((1 / speed) * 10) / 10;
-    feelDesc = `Each real second displays as ${speed} seconds — action is ${speedupFactor}× faster. 1 real minute = ${Math.round(speed * 60)}s displayed.`;
+    const slowFactor = Math.round((1 / speed) * 10) / 10;
+    desc = `Your ${realStr} will feel like ${expStr}. Time is SLOWED DOWN — it takes ${slowFactor} real seconds to see 1 displayed second.`;
+    badge = '<span class="result-badge badge-slow">🐢 Time Slowed ×' + slowFactor + '</span>';
+    feelDesc = `Every 1 real second → ${speed} displayed seconds. Time feels ${slowFactor}× slower.`;
   } else {
     desc = `Your ${realStr} will feel like ${expStr}. Normal speed.`;
     badge = '<span class="result-badge badge-normal">⏱️ Normal</span>';
@@ -432,46 +413,50 @@ function startTimer() {
   
   const totalExperienceTarget = targetReal * speed;
   
-  // Use precise system time: multiply each real elapsed interval by the user's multiplier
-  // e.g. multiplier=0.25 → 1 real sec shows 0.25s (action 4× faster)
-  // e.g. multiplier=10 → 1 real sec shows 10s (feels 10× slower)
+  // PRECISE SYSTEM TIME × MULTIPLIER
+  // The white "Timer" counts UP at (speed) seconds per real second
+  //   speed=2 → white timer jumps 2s every real second (time sped up)
+  //   speed=0.5 → white timer only moves 0.5s every real second (time slowed)
+  // The red "Time Remaining" counts DOWN in real time (1 real sec = 1 sec off)
+  // Timer completes when real elapsed time reaches the user's set duration
   const startTime = Date.now() - (elapsedReal * 1000);
   
   timerInterval = setInterval(() => {
     elapsedReal = (Date.now() - startTime) / 1000;
-    const experienced = elapsedReal * speed;
     
-    // Count UP display
+    // WHITE TIMER: counts up at speed × real time
+    const experienced = elapsedReal * speed;
     const dH = Math.floor(experienced / 3600);
     const dM = Math.floor((experienced % 3600) / 60);
     const dS = Math.floor(experienced % 60);
+    const dMs = Math.floor((experienced % 1) * 10);
     
     display.textContent = 
       String(dH).padStart(2, '0') + ':' + 
       String(dM).padStart(2, '0') + ':' + 
-      String(dS).padStart(2, '0');
+      String(dS).padStart(2, '0') + '.' + dMs;
     
-    // Count DOWN display
-    const remaining = Math.max(0, totalExperienceTarget - experienced);
-    const rH = Math.floor(remaining / 3600);
-    const rM = Math.floor((remaining % 3600) / 60);
-    const rS = Math.floor(remaining % 60);
+    // RED COUNTDOWN: counts down in real time based on set duration
+    const realRemaining = Math.max(0, targetReal - elapsedReal);
+    const rH = Math.floor(realRemaining / 3600);
+    const rM = Math.floor((realRemaining % 3600) / 60);
+    const rS = Math.floor(realRemaining % 60);
     
     countdown.textContent = 
       String(rH).padStart(2, '0') + ':' + 
       String(rM).padStart(2, '0') + ':' + 
       String(rS).padStart(2, '0');
     
-    // Progress bar (fills from left as time passes)
-    const progress = totalExperienceTarget > 0 ? Math.min(100, (experienced / totalExperienceTarget) * 100) : 0;
+    // Progress bar based on real time elapsed
+    const progress = targetReal > 0 ? Math.min(100, (elapsedReal / targetReal) * 100) : 0;
     countdownBar.style.width = (100 - progress) + '%';
     
     // Info text
     const pct = Math.round(progress);
-    countdownInfo.textContent = pct + '% complete — ' + formatDuration(remaining) + ' remaining';
+    countdownInfo.textContent = pct + '% complete — ' + formatDuration(realRemaining) + ' real time remaining';
     
-    // Check completion
-    if (experienced >= totalExperienceTarget) {
+    // Complete when real time is up
+    if (elapsedReal >= targetReal) {
       clearInterval(timerInterval);
       isRunning = false;
       display.className = 'timer-display';

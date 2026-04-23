@@ -381,6 +381,17 @@ function calculate() {
   document.getElementById('resultDesc').textContent = desc;
   document.getElementById('resultBadge').innerHTML = badge;
   document.getElementById('resultFeelDesc').textContent = feelDesc;
+  
+  // Update countdown display to show the set time (before starting)
+  if (!isRunning) {
+    const cH = Math.floor(totalRealSeconds / 3600);
+    const cM = Math.floor((totalRealSeconds % 3600) / 60);
+    const cS = totalRealSeconds % 60;
+    document.getElementById('countdownDisplay').textContent = 
+      String(cH).padStart(2, '0') + ':' + 
+      String(cM).padStart(2, '0') + ':' + 
+      String(cS).padStart(2, '0');
+  }
 }
 
 function formatDuration(secs) {

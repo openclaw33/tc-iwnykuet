@@ -229,6 +229,7 @@
     <div class="result-time" id="resultTime">0h 10m 0s</div>
     <div id="resultBadge"></div>
     <div class="result-desc" id="resultDesc">Your 10 minutes will feel like 10 minutes.</div>
+    <div class="result-desc" id="resultFeelDesc" style="margin-top:6px; font-style:italic; color:var(--accent2);"></div>
   </div>
 
   <!-- TIMER DISPLAY -->
@@ -380,20 +381,25 @@ function calculate() {
   const realStr = formatDuration(totalRealSeconds);
   const expStr = formatDuration(experienceSeconds);
   
-  let desc, badge;
+  let desc, badge, feelDesc;
   if (speed > 1) {
     desc = `Your ${realStr} will feel like ${expStr}. Time stretches — you gain seconds.`;
     badge = '<span class="result-badge badge-slow">🐢 Time Stretched</span>';
+    feelDesc = `Each real second displays as ${speed} seconds — time feels ${speed}× slower. 1 real minute = ${Math.round(speed * 60)}s displayed.`;
   } else if (speed < 1) {
     desc = `Your ${realStr} will feel like ${expStr}. Time compresses — seconds fly by.`;
     badge = '<span class="result-badge badge-fast">⚡ Time Compressed</span>';
+    const speedupFactor = Math.round((1 / speed) * 10) / 10;
+    feelDesc = `Each real second displays as ${speed} seconds — action is ${speedupFactor}× faster. 1 real minute = ${Math.round(speed * 60)}s displayed.`;
   } else {
     desc = `Your ${realStr} will feel like ${expStr}. Normal speed.`;
     badge = '<span class="result-badge badge-normal">⏱️ Normal</span>';
+    feelDesc = `Each real second = 1 displayed second. Normal speed.`;
   }
   
   document.getElementById('resultDesc').textContent = desc;
   document.getElementById('resultBadge').innerHTML = badge;
+  document.getElementById('resultFeelDesc').textContent = feelDesc;
 }
 
 function formatDuration(secs) {
@@ -426,6 +432,9 @@ function startTimer() {
   
   const totalExperienceTarget = targetReal * speed;
   
+  // Use precise system time: multiply each real elapsed interval by the user's multiplier
+  // e.g. multiplier=0.25 → 1 real sec shows 0.25s (action 4× faster)
+  // e.g. multiplier=10 → 1 real sec shows 10s (feels 10× slower)
   const startTime = Date.now() - (elapsedReal * 1000);
   
   timerInterval = setInterval(() => {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'time-control-v1';
+const CACHE_NAME = 'time-control-v2';
 const ASSETS = [
   'index.html',
   'manifest.json',
@@ -18,8 +18,13 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
+// Network-first: always try fresh version, fall back to cache if offline
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    fetch(e.request).then(response => {
+      const clone = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+      return response;
+    }).catch(() => caches.match(e.request))
   );
 });

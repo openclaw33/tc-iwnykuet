@@ -440,7 +440,7 @@ function startTimer() {
     
     // WHITE TIMER: counts up at speed × real time
     // Round to nearest whole second to stay in sync with countdown
-    const experienced = Math.round(elapsedReal * speed);
+    const experienced = Math.round(elapsedReal) * speed;
     const dH = Math.floor(experienced / 3600);
     const dM = Math.floor((experienced % 3600) / 60);
     const dS = experienced % 60;

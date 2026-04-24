@@ -1,4 +1,4 @@
-const CACHE_NAME = 'time-control-v7';
+const CACHE_NAME = 'time-control-v8';
 const ASSETS = [
   'index.html',
   'manifest.json',

@@ -439,8 +439,9 @@ function startTimer() {
     elapsedReal = (Date.now() - startTime) / 1000;
     
     // WHITE TIMER: counts up at speed × real time
-    // Round to nearest whole second to stay in sync with countdown
-    const experienced = Math.round(elapsedReal) * speed;
+    // Use floor (same as countdown) so both timers are perfectly in sync
+    const realSecondsElapsed = Math.floor(elapsedReal);
+    const experienced = realSecondsElapsed * speed;
     const dH = Math.floor(experienced / 3600);
     const dM = Math.floor((experienced % 3600) / 60);
     const dS = experienced % 60;

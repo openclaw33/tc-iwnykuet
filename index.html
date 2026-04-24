@@ -348,34 +348,35 @@ function calculate() {
   const speed = parseFloat(document.getElementById('speedFactor').value) || 1;
   
   const totalRealSeconds = h * 3600 + m * 60 + s;
-  const experienceSeconds = totalRealSeconds * speed;
+  // The timer display will show this many seconds when the countdown finishes
+  const timerWillShow = totalRealSeconds * speed;
   
-  // Format experience time
-  const eH = Math.floor(experienceSeconds / 3600);
-  const eM = Math.floor((experienceSeconds % 3600) / 60);
-  const eS = Math.round(experienceSeconds % 60);
+  // Format what the Timer will read when done
+  const eH = Math.floor(timerWillShow / 3600);
+  const eM = Math.floor((timerWillShow % 3600) / 60);
+  const eS = Math.round(timerWillShow % 60);
   
   document.getElementById('resultTime').textContent = 
     (eH > 0 ? eH + 'h ' : '') + eM + 'm ' + eS + 's';
   
   // Description
   const realStr = formatDuration(totalRealSeconds);
-  const expStr = formatDuration(experienceSeconds);
+  const timerStr = formatDuration(timerWillShow);
   
   let desc, badge, feelDesc;
   if (speed > 1) {
-    desc = `Your ${realStr} will feel like ${expStr}. Time is SPED UP — the timer counts ${speed}s for every real second.`;
-    badge = '<span class="result-badge badge-fast">⚡ Time Sped Up ×' + speed + '</span>';
-    feelDesc = `Every 1 real second → ${speed} displayed seconds. You experience ${speed}× more time.`;
+    desc = `Your timer runs for ${realStr}. The Timer will read ${timerStr} when done (counting ${speed}s per real second).`;
+    badge = '<span class="result-badge badge-fast">⚡ ×' + speed + ' speed</span>';
+    feelDesc = `For every 1 second on Time Remaining, the Timer counts up ${speed} seconds.`;
   } else if (speed < 1) {
     const slowFactor = Math.round((1 / speed) * 10) / 10;
-    desc = `Your ${realStr} will feel like ${expStr}. Time is SLOWED DOWN — it takes ${slowFactor} real seconds to see 1 displayed second.`;
-    badge = '<span class="result-badge badge-slow">🐢 Time Slowed ×' + slowFactor + '</span>';
-    feelDesc = `Every 1 real second → ${speed} displayed seconds. Time feels ${slowFactor}× slower.`;
+    desc = `Your timer runs for ${realStr}. The Timer will read ${timerStr} when done (counting ${speed}s per real second).`;
+    badge = '<span class="result-badge badge-slow">🐢 ×' + speed + ' speed</span>';
+    feelDesc = `For every 1 second on Time Remaining, the Timer only counts up ${speed} seconds.`;
   } else {
-    desc = `Your ${realStr} will feel like ${expStr}. Normal speed.`;
+    desc = `Your timer runs for ${realStr}. Normal speed — both timers match.`;
     badge = '<span class="result-badge badge-normal">⏱️ Normal</span>';
-    feelDesc = `Each real second = 1 displayed second. Normal speed.`;
+    feelDesc = `For every 1 second on Time Remaining, the Timer counts 1 second.`;
   }
   
   document.getElementById('resultDesc').textContent = desc;

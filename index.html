@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -164,7 +163,7 @@
 
 <!-- SIGN UP -->
 <div class="screen" id="screen-signup" style="display:none!important">
-  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">ðŸŒ“</button></div></div>
   <div class="auth-container">
     <h2>Create Account</h2>
     <p>Control how time feels</p>
@@ -178,7 +177,7 @@
 
 <!-- LOGIN -->
 <div class="screen" id="screen-login" style="display:none!important">
-  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">ðŸŒ“</button></div></div>
   <div class="auth-container">
     <h2>Welcome Back</h2>
     <p>Pick up where you left off</p>
@@ -191,9 +190,9 @@
 
 <!-- HOME -->
 <div class="screen active" id="screen-home">
-  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">ðŸŒ“</button></div></div>
   
-  <input class="timer-name" id="timerLabel" placeholder="✏️ Name your timer (optional)">
+  <input class="timer-name" id="timerLabel" placeholder="âœï¸ Name your timer (optional)">
   
   <div class="timer-section">
     <div class="timer-label">Set Your Time</div>
@@ -211,7 +210,7 @@
   <div class="speed-section">
     <h3>Seconds per second</h3>
     <div class="speed-input-wrap">
-      <button class="speed-adj-btn" onclick="adjustSpeed(-0.1)">−</button>
+      <button class="speed-adj-btn" onclick="adjustSpeed(-0.1)">âˆ’</button>
       <input class="speed-val" id="speedFactor" type="number" min="0.01" max="600" step="0.1" value="1" oninput="calculate()">
       <button class="speed-adj-btn" onclick="adjustSpeed(0.1)">+</button>
     </div>
@@ -220,54 +219,54 @@
   <!-- RESULT -->
   <div class="result-section">
     <h3>Experience Time</h3>
-    <div class="result-time" id="resultTime">0h 10m 0s</div>
-    <div id="resultBadge"></div>
-    <div class="result-desc" id="resultDesc">Your 10 minutes will feel like 10 minutes.</div>
-    <div class="result-desc" id="resultFeelDesc" style="margin-top:6px; font-style:italic; color:var(--accent2);"></div>
+    <div class="result-time" id="resultTime">1m 0s</div>
+    <div id="resultBadge"><span class="result-badge badge-fast">âš¡ Time Flies Ã—2</span></div>
+    <div class="result-desc" id="resultDesc">Your 2 minutes will feel like 1 minutes. Time flies â€” seconds move 2Ã— faster.</div>
+    <div class="result-desc" id="resultFeelDesc" style="margin-top:6px; font-style:italic; color:var(--accent2);">For every 1 real second, the Timer counts 2 seconds. Your 2 minutes feels shorter.</div>
   </div>
 
   <!-- TIMER DISPLAY -->
   <div class="timer-section">
     <div class="timer-label">Timer</div>
-    <div class="timer-display" id="timerDisplay">00:00:00</div>
+    <div class="timer-display done" id="timerDisplay">00:00:00</div>
   </div>
 
   <!-- COUNTDOWN TIMER -->
   <div class="timer-section">
     <div class="timer-label">Time Remaining</div>
-    <div class="timer-display countdown" id="countdownDisplay">00:00:00</div>
-    <div class="countdown-bar-wrap" id="countdownBarWrap" style="display:none;">
-      <div class="countdown-bar" id="countdownBar"></div>
+    <div class="timer-display countdown done" id="countdownDisplay">00:00:00</div>
+    <div class="countdown-bar-wrap" id="countdownBarWrap" style="display: block;">
+      <div class="countdown-bar" id="countdownBar" style="width: 0%;"></div>
     </div>
-    <div class="countdown-info" id="countdownInfo"></div>
+    <div class="countdown-info" id="countdownInfo">? Complete!</div>
   </div>
 
   <!-- CONTROLS -->
   <div class="controls">
-    <button class="ctrl-btn btn-start" id="btnStart" onclick="startTimer()">▶ Start</button>
-    <button class="ctrl-btn btn-pause" id="btnPause" onclick="pauseTimer()" style="display:none;">⏸ Pause</button>
-    <button class="ctrl-btn btn-reset" onclick="resetTimer()">↺ Reset</button>
+    <button class="ctrl-btn btn-start" id="btnStart" onclick="startTimer()" style="display: block;">â–¶ Start</button>
+    <button class="ctrl-btn btn-pause" id="btnPause" onclick="pauseTimer()" style="display: none;">â¸ Pause</button>
+    <button class="ctrl-btn btn-reset" onclick="resetTimer()">â†º Reset</button>
   </div>
 </div>
 
 <!-- PROFILE -->
 <div class="screen" id="screen-profile">
-  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">🌓</button></div></div>
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">ðŸŒ“</button></div></div>
   <div class="profile-header">
-    <div class="avatar" id="profileAvatar">👤</div>
+    <div class="avatar" id="profileAvatar">U</div>
     <div class="profile-name" id="profileName">User</div>
-    <div class="profile-email" id="profileEmail">user@email.com</div>
+    <div class="profile-email" id="profileEmail"></div>
   </div>
   <div class="profile-stats">
-    <div class="stat"><div class="stat-val" id="statTimers">0</div><div class="stat-label">Timers Run</div></div>
-    <div class="stat"><div class="stat-val" id="statTime">0m</div><div class="stat-label">Time Controlled</div></div>
+    <div class="stat"><div class="stat-val" id="statTimers">2</div><div class="stat-label">Timers Run</div></div>
+    <div class="stat"><div class="stat-val" id="statTime">4m</div><div class="stat-label">Time Controlled</div></div>
   </div>
   <button class="logout-btn" onclick="logOut()">Log Out</button>
 </div>
 
 <!-- BOTTOM NAV -->
-<div class="bottom-nav" id="bottomNav" style="display:none;">
-  <button class="active" onclick="navTo('home',this)"><span class="icon">⏱</span>Timer</button>
+<div class="bottom-nav" id="bottomNav" style="display: flex;">
+  <button class="active" onclick="navTo('home',this)"><span class="icon">â±</span>Timer</button>
   <!-- Profile removed - no signup needed -->
 </div>
 
@@ -349,8 +348,8 @@ function calculate() {
   
   const totalRealSeconds = h * 3600 + m * 60 + s;
   // How the user PERCEIVES the time:
-  // 2sps = seconds fly by fast = 6hrs feels like 3hrs (set time ÷ speed)
-  // 0.5sps = seconds crawl = 6hrs feels like 12hrs (set time ÷ speed)
+  // 2sps = seconds fly by fast = 6hrs feels like 3hrs (set time Ã· speed)
+  // 0.5sps = seconds crawl = 6hrs feels like 12hrs (set time Ã· speed)
   const experienceSeconds = totalRealSeconds / speed;
   
   // Format experience time
@@ -367,17 +366,17 @@ function calculate() {
   
   let desc, badge, feelDesc;
   if (speed > 1) {
-    desc = `Your ${realStr} will feel like ${expStr}. Time flies — seconds move ${speed}× faster.`;
-    badge = '<span class="result-badge badge-fast">⚡ Time Flies ×' + speed + '</span>';
+    desc = `Your ${realStr} will feel like ${expStr}. Time flies â€” seconds move ${speed}Ã— faster.`;
+    badge = '<span class="result-badge badge-fast">âš¡ Time Flies Ã—' + speed + '</span>';
     feelDesc = `For every 1 real second, the Timer counts ${speed} seconds. Your ${realStr} feels shorter.`;
   } else if (speed < 1) {
     const slowFactor = Math.round((1 / speed) * 10) / 10;
-    desc = `Your ${realStr} will feel like ${expStr}. Time drags — seconds move ${slowFactor}× slower.`;
-    badge = '<span class="result-badge badge-slow">🐢 Time Drags ×' + slowFactor + '</span>';
+    desc = `Your ${realStr} will feel like ${expStr}. Time drags â€” seconds move ${slowFactor}Ã— slower.`;
+    badge = '<span class="result-badge badge-slow">ðŸ¢ Time Drags Ã—' + slowFactor + '</span>';
     feelDesc = `For every 1 real second, the Timer only counts ${speed} seconds. Your ${realStr} feels longer.`;
   } else {
     desc = `Your ${realStr} will feel like ${expStr}. Normal speed.`;
-    badge = '<span class="result-badge badge-normal">⏱️ Normal</span>';
+    badge = '<span class="result-badge badge-normal">â±ï¸ Normal</span>';
     feelDesc = `For every 1 real second, the Timer counts 1 second.`;
   }
   
@@ -404,100 +403,127 @@ function formatDuration(secs) {
 }
 
 // ===== TIMER =====
-function startTimer() {
-  if (isRunning) return;
+const ACTIVE_TIMER_KEY = 'tc_active_timer';
+
+function formatClock(totalSeconds) {
+  const safe = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(safe / 3600);
+  const m = Math.floor((safe % 3600) / 60);
+  const s = safe % 60;
+  return String(h).padStart(2, '0') + ':' +
+    String(m).padStart(2, '0') + ':' +
+    String(s).padStart(2, '0');
+}
+
+function clearActiveTimer() {
+  localStorage.removeItem(ACTIVE_TIMER_KEY);
+}
+
+function saveActiveTimer(timer) {
+  localStorage.setItem(ACTIVE_TIMER_KEY, JSON.stringify(timer));
+}
+
+function completeTimer(targetReal) {
+  clearInterval(timerInterval);
+  clearActiveTimer();
+  isRunning = false;
+  elapsedReal = targetReal;
+  document.getElementById('timerDisplay').className = 'timer-display done';
+  document.getElementById('countdownDisplay').className = 'timer-display countdown done';
+  document.getElementById('timerDisplay').textContent = '00:00:00';
+  document.getElementById('countdownDisplay').textContent = '00:00:00';
+  document.getElementById('countdownBar').style.width = '0%';
+  document.getElementById('countdownInfo').textContent = 'Complete!';
+  document.getElementById('btnStart').style.display = 'block';
+  document.getElementById('btnPause').style.display = 'none';
+
+  timersRun++;
+  totalControlled += targetReal / 60;
+  localStorage.setItem('tc_timers', timersRun);
+  localStorage.setItem('tc_total', totalControlled);
+  document.getElementById('statTimers').textContent = timersRun;
+  document.getElementById('statTime').textContent = Math.round(totalControlled) + 'm';
+
+  launchConfetti();
+}
+
+function renderTimerTick(targetReal, speed, endAt) {
+  const realRemaining = Math.max(0, (endAt - Date.now()) / 1000);
+  elapsedReal = Math.min(targetReal, targetReal - realRemaining);
+  const experienceRemaining = realRemaining / speed;
+
+  document.getElementById('timerDisplay').textContent = formatClock(experienceRemaining);
+  document.getElementById('countdownDisplay').textContent = formatClock(realRemaining);
+
+  const progress = targetReal > 0 ? Math.min(100, (elapsedReal / targetReal) * 100) : 0;
+  document.getElementById('countdownBar').style.width = (100 - progress) + '%';
+  document.getElementById('countdownInfo').textContent =
+    Math.round(progress) + '% complete - ' + formatDuration(realRemaining) + ' real time remaining';
+
+  if (realRemaining <= 0) completeTimer(targetReal);
+}
+
+function runTimerFromState(state) {
+  const targetReal = Number(state.targetReal) || 0;
+  const speed = Math.max(0.01, Number(state.speed) || 1);
+  const endAt = Number(state.endAt) || Date.now();
+
   isRunning = true;
   document.getElementById('btnStart').style.display = 'none';
   document.getElementById('btnPause').style.display = 'block';
-  
-  const speed = parseFloat(document.getElementById('speedFactor').value) || 1;
+  document.getElementById('timerDisplay').className = 'timer-display running';
+  document.getElementById('countdownDisplay').className = 'timer-display countdown running';
+  document.getElementById('countdownBarWrap').style.display = 'block';
+
+  clearInterval(timerInterval);
+  renderTimerTick(targetReal, speed, endAt);
+  if (!isRunning) return;
+  timerInterval = setInterval(() => renderTimerTick(targetReal, speed, endAt), 50);
+}
+
+function restoreActiveTimer() {
+  const raw = localStorage.getItem(ACTIVE_TIMER_KEY);
+  if (!raw) return;
+
+  try {
+    const state = JSON.parse(raw);
+    const targetReal = Number(state.targetReal) || 0;
+    const speed = Math.max(0.01, Number(state.speed) || 1);
+
+    document.getElementById('inH').value = Math.floor(targetReal / 3600);
+    document.getElementById('inM').value = Math.floor((targetReal % 3600) / 60);
+    document.getElementById('inS').value = targetReal % 60;
+    document.getElementById('speedFactor').value = speed;
+    calculate();
+
+    runTimerFromState(state);
+  } catch {
+    clearActiveTimer();
+  }
+}
+
+function startTimer() {
+  if (isRunning) return;
+
+  const speed = Math.max(0.01, parseFloat(document.getElementById('speedFactor').value) || 1);
   const h = parseInt(document.getElementById('inH').value) || 0;
   const m = parseInt(document.getElementById('inM').value) || 0;
   const s = parseInt(document.getElementById('inS').value) || 0;
   const targetReal = h * 3600 + m * 60 + s;
-  
-  const display = document.getElementById('timerDisplay');
-  const countdown = document.getElementById('countdownDisplay');
-  const countdownBar = document.getElementById('countdownBar');
-  const countdownBarWrap = document.getElementById('countdownBarWrap');
-  const countdownInfo = document.getElementById('countdownInfo');
-  display.className = 'timer-display running';
-  countdown.className = 'timer-display countdown running';
-  countdownBarWrap.style.display = 'block';
-  
-  const totalExperienceTarget = targetReal * speed;
-  
-  // PRECISE SYSTEM TIME × MULTIPLIER
-  // The white "Timer" counts UP at (speed) seconds per real second
-  //   speed=2 → white timer jumps 2s every real second (time sped up)
-  //   speed=0.5 → white timer only moves 0.5s every real second (time slowed)
-  // The red "Time Remaining" counts DOWN in real time (1 real sec = 1 sec off)
-  // Timer completes when real elapsed time reaches the user's set duration
-  const startTime = Date.now() - (elapsedReal * 1000);
-  
-  timerInterval = setInterval(() => {
-    elapsedReal = (Date.now() - startTime) / 1000;
-    
-    // WHITE TIMER: counts up at speed × real time
-    // Use floor (same as countdown) so both timers are perfectly in sync
-    const realSecondsElapsed = Math.floor(elapsedReal);
-    const experienced = realSecondsElapsed * speed;
-    const dH = Math.floor(experienced / 3600);
-    const dM = Math.floor((experienced % 3600) / 60);
-    const dS = experienced % 60;
-    
-    display.textContent = 
-      String(dH).padStart(2, '0') + ':' + 
-      String(dM).padStart(2, '0') + ':' + 
-      String(dS).padStart(2, '0');
-    
-    // RED COUNTDOWN: counts down in real time based on set duration
-    const realRemaining = Math.max(0, targetReal - elapsedReal);
-    const rH = Math.floor(realRemaining / 3600);
-    const rM = Math.floor((realRemaining % 3600) / 60);
-    const rS = Math.floor(realRemaining % 60);
-    
-    countdown.textContent = 
-      String(rH).padStart(2, '0') + ':' + 
-      String(rM).padStart(2, '0') + ':' + 
-      String(rS).padStart(2, '0');
-    
-    // Progress bar based on real time elapsed
-    const progress = targetReal > 0 ? Math.min(100, (elapsedReal / targetReal) * 100) : 0;
-    countdownBar.style.width = (100 - progress) + '%';
-    
-    // Info text
-    const pct = Math.round(progress);
-    countdownInfo.textContent = pct + '% complete — ' + formatDuration(realRemaining) + ' real time remaining';
-    
-    // Complete when real time is up
-    if (elapsedReal >= targetReal) {
-      clearInterval(timerInterval);
-      isRunning = false;
-      display.className = 'timer-display';
-      countdown.className = 'timer-display countdown done';
-      countdown.textContent = '00:00:00';
-      countdownBar.style.width = '0%';
-      countdownInfo.textContent = '✅ Complete!';
-      document.getElementById('btnStart').style.display = 'block';
-      document.getElementById('btnPause').style.display = 'none';
-      
-      // Stats
-      timersRun++;
-      totalControlled += targetReal / 60;
-      localStorage.setItem('tc_timers', timersRun);
-      localStorage.setItem('tc_total', totalControlled);
-      document.getElementById('statTimers').textContent = timersRun;
-      document.getElementById('statTime').textContent = Math.round(totalControlled) + 'm';
-      
-      // Confetti!
-      launchConfetti();
-    }
-  }, 50);
+  if (targetReal <= 0) return;
+
+  const state = {
+    targetReal,
+    speed,
+    endAt: Date.now() + Math.max(0, targetReal - elapsedReal) * 1000
+  };
+  saveActiveTimer(state);
+  runTimerFromState(state);
 }
 
 function pauseTimer() {
   clearInterval(timerInterval);
+  clearActiveTimer();
   isRunning = false;
   document.getElementById('timerDisplay').className = 'timer-display paused';
   document.getElementById('countdownDisplay').className = 'timer-display countdown';
@@ -507,6 +533,7 @@ function pauseTimer() {
 
 function resetTimer() {
   clearInterval(timerInterval);
+  clearActiveTimer();
   isRunning = false;
   elapsedReal = 0;
   document.getElementById('timerDisplay').textContent = '00:00:00';
@@ -549,11 +576,13 @@ if (localStorage.getItem('tc_theme') === 'light') document.body.classList.add('l
 // Auto-enter app without signup
 user = user || { name: 'User', email: '' };
 enterApp();
+restoreActiveTimer();
 
 // Register service worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(() => console.log('SW registered'));
 }
 </script>
-</body>
-</html>
+
+
+</body></html>

@@ -163,7 +163,7 @@
 
 <!-- SIGN UP -->
 <div class="screen" id="screen-signup" style="display:none!important">
-  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">ðŸŒ“</button></div></div>
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()" aria-label="Toggle theme">T</button></div></div>
   <div class="auth-container">
     <h2>Create Account</h2>
     <p>Control how time feels</p>
@@ -177,7 +177,7 @@
 
 <!-- LOGIN -->
 <div class="screen" id="screen-login" style="display:none!important">
-  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">ðŸŒ“</button></div></div>
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()" aria-label="Toggle theme">T</button></div></div>
   <div class="auth-container">
     <h2>Welcome Back</h2>
     <p>Pick up where you left off</p>
@@ -190,9 +190,9 @@
 
 <!-- HOME -->
 <div class="screen active" id="screen-home">
-  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">ðŸŒ“</button></div></div>
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()" aria-label="Toggle theme">T</button></div></div>
   
-  <input class="timer-name" id="timerLabel" placeholder="âœï¸ Name your timer (optional)">
+  <input class="timer-name" id="timerLabel" placeholder="Name your timer (optional)">
   
   <div class="timer-section">
     <div class="timer-label">Set Your Time</div>
@@ -210,7 +210,7 @@
   <div class="speed-section">
     <h3>Seconds per second</h3>
     <div class="speed-input-wrap">
-      <button class="speed-adj-btn" onclick="adjustSpeed(-0.1)">âˆ’</button>
+      <button class="speed-adj-btn" onclick="adjustSpeed(-0.1)">-</button>
       <input class="speed-val" id="speedFactor" type="number" min="0.01" max="600" step="0.1" value="1" oninput="calculate()">
       <button class="speed-adj-btn" onclick="adjustSpeed(0.1)">+</button>
     </div>
@@ -220,8 +220,8 @@
   <div class="result-section">
     <h3>Experience Time</h3>
     <div class="result-time" id="resultTime">1m 0s</div>
-    <div id="resultBadge"><span class="result-badge badge-fast">âš¡ Time Flies Ã—2</span></div>
-    <div class="result-desc" id="resultDesc">Your 2 minutes will feel like 1 minutes. Time flies â€” seconds move 2Ã— faster.</div>
+    <div id="resultBadge"><span class="result-badge badge-fast">Time Flies x2</span></div>
+    <div class="result-desc" id="resultDesc">Your 2 minutes will feel like 1 minutes. Time flies - seconds move 2x faster.</div>
     <div class="result-desc" id="resultFeelDesc" style="margin-top:6px; font-style:italic; color:var(--accent2);">For every 1 real second, the Timer counts 2 seconds. Your 2 minutes feels shorter.</div>
   </div>
 
@@ -238,20 +238,20 @@
     <div class="countdown-bar-wrap" id="countdownBarWrap" style="display: block;">
       <div class="countdown-bar" id="countdownBar" style="width: 0%;"></div>
     </div>
-    <div class="countdown-info" id="countdownInfo">? Complete!</div>
+    <div class="countdown-info" id="countdownInfo">Complete!</div>
   </div>
 
   <!-- CONTROLS -->
   <div class="controls">
-    <button class="ctrl-btn btn-start" id="btnStart" onclick="startTimer()" style="display: block;">â–¶ Start</button>
-    <button class="ctrl-btn btn-pause" id="btnPause" onclick="pauseTimer()" style="display: none;">â¸ Pause</button>
-    <button class="ctrl-btn btn-reset" onclick="resetTimer()">â†º Reset</button>
+    <button class="ctrl-btn btn-start" id="btnStart" onclick="startTimer()" style="display: block;">Start</button>
+    <button class="ctrl-btn btn-pause" id="btnPause" onclick="pauseTimer()" style="display: none;">Pause</button>
+    <button class="ctrl-btn btn-reset" onclick="resetTimer()">Reset</button>
   </div>
 </div>
 
 <!-- PROFILE -->
 <div class="screen" id="screen-profile">
-  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()">ðŸŒ“</button></div></div>
+  <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()" aria-label="Toggle theme">T</button></div></div>
   <div class="profile-header">
     <div class="avatar" id="profileAvatar">U</div>
     <div class="profile-name" id="profileName">User</div>
@@ -266,7 +266,7 @@
 
 <!-- BOTTOM NAV -->
 <div class="bottom-nav" id="bottomNav" style="display: flex;">
-  <button class="active" onclick="navTo('home',this)"><span class="icon">â±</span>Timer</button>
+  <button class="active" onclick="navTo('home',this)">Timer</button>
   <!-- Profile removed - no signup needed -->
 </div>
 
@@ -366,17 +366,17 @@ function calculate() {
   
   let desc, badge, feelDesc;
   if (speed > 1) {
-    desc = `Your ${realStr} will feel like ${expStr}. Time flies â€” seconds move ${speed}Ã— faster.`;
-    badge = '<span class="result-badge badge-fast">âš¡ Time Flies Ã—' + speed + '</span>';
+    desc = `Your ${realStr} will feel like ${expStr}. Time flies - seconds move ${speed}x faster.`;
+    badge = '<span class="result-badge badge-fast">Time Flies x' + speed + '</span>';
     feelDesc = `For every 1 real second, the Timer counts ${speed} seconds. Your ${realStr} feels shorter.`;
   } else if (speed < 1) {
     const slowFactor = Math.round((1 / speed) * 10) / 10;
-    desc = `Your ${realStr} will feel like ${expStr}. Time drags â€” seconds move ${slowFactor}Ã— slower.`;
-    badge = '<span class="result-badge badge-slow">ðŸ¢ Time Drags Ã—' + slowFactor + '</span>';
+    desc = `Your ${realStr} will feel like ${expStr}. Time drags - seconds move ${slowFactor}x slower.`;
+    badge = '<span class="result-badge badge-slow">Time Drags x' + slowFactor + '</span>';
     feelDesc = `For every 1 real second, the Timer only counts ${speed} seconds. Your ${realStr} feels longer.`;
   } else {
     desc = `Your ${realStr} will feel like ${expStr}. Normal speed.`;
-    badge = '<span class="result-badge badge-normal">â±ï¸ Normal</span>';
+    badge = '<span class="result-badge badge-normal">Normal</span>';
     feelDesc = `For every 1 real second, the Timer counts 1 second.`;
   }
   
@@ -586,3 +586,4 @@ if ('serviceWorker' in navigator) {
 
 
 </body></html>
+

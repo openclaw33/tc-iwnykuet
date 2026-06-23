@@ -117,6 +117,16 @@
   .countdown-bar { height: 100%; background: linear-gradient(90deg, var(--red), var(--yellow), var(--green)); border-radius: 3px; width: 100%; transition: width 0.2s; }
   .countdown-info { font-size: 0.75rem; color: var(--text2); text-align: center; margin-top: 4px; }
 
+  /* FOCUSED TIMER OVERLAY */
+  .timer-overlay { position: fixed; inset: 0; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 32px 20px; background: var(--bg); color: var(--text); text-align: center; }
+  .timer-overlay.active { display: flex; }
+  .overlay-kicker { color: var(--text2); font-size: 0.75rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; }
+  .overlay-label { max-width: 90vw; font-size: clamp(1.25rem, 5vw, 2.5rem); font-weight: 800; overflow-wrap: anywhere; }
+  .overlay-time { font-family: 'JetBrains Mono', monospace; font-size: clamp(4rem, 18vw, 10rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; color: var(--green); }
+  .zoom-btn { border: 1px solid var(--surface2); border-radius: 999px; padding: 12px 20px; background: var(--surface); color: var(--text); font-family: inherit; font-size: 0.85rem; font-weight: 800; cursor: pointer; }
+  .zoom-btn:active { transform: scale(0.96); }
+  .zoom-in-btn { position: fixed; right: 18px; bottom: 78px; z-index: 120; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+
   /* CONTROLS */
   .controls { display: flex; gap: 12px; justify-content: center; margin: 20px 0; }
   .ctrl-btn { flex: 1; max-width: 140px; padding: 14px; border-radius: 14px; border: none; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; }
@@ -205,6 +215,7 @@
 <!-- HOME -->
 <div class="screen active" id="screen-home">
   <div class="nav"><h1>Time Control</h1><div class="nav-btns"><button class="nav-btn" onclick="toggleTheme()" aria-label="Toggle theme">T</button></div></div>
+  <button class="zoom-btn zoom-in-btn" id="zoomInBtn" onclick="zoomInTimer()">Zoom In</button>
   
   <input class="timer-name" id="timerLabel" placeholder="Name your timer (optional)">
   <button class="save-timer-btn" onclick="saveLabeledTimer()">Save Labeled Timer</button>
@@ -262,6 +273,14 @@
     <button class="ctrl-btn btn-pause" id="btnPause" onclick="pauseTimer()" style="display: none;">Pause</button>
     <button class="ctrl-btn btn-reset" onclick="resetTimer()">Reset</button>
   </div>
+</div>
+
+<!-- FOCUSED TIMER OVERLAY -->
+<div class="timer-overlay" id="timerOverlay" aria-live="polite">
+  <div class="overlay-kicker">Custom Timer</div>
+  <div class="overlay-label" id="overlayTimerLabel">Untitled Timer</div>
+  <div class="overlay-time" id="overlayTimerDisplay">00:00:00</div>
+  <button class="zoom-btn" onclick="zoomOutTimer()">Zoom Out</button>
 </div>
 
 <!-- PROFILE -->
@@ -496,6 +515,7 @@ function formatDuration(secs) {
 
 // ===== TIMER =====
 const ACTIVE_TIMER_KEY = 'tc_active_timer';
+const TIMER_VIEW_KEY = 'tc_timer_view';
 
 function formatClock(totalSeconds) {
   const safe = Math.max(0, Math.floor(totalSeconds));
@@ -515,6 +535,36 @@ function saveActiveTimer(timer) {
   localStorage.setItem(ACTIVE_TIMER_KEY, JSON.stringify(timer));
 }
 
+function updateOverlayTimer(label, time) {
+  document.getElementById('overlayTimerLabel').textContent = label || 'Untitled Timer';
+  document.getElementById('overlayTimerDisplay').textContent = time || '00:00:00';
+}
+
+function zoomInTimer() {
+  if (!localStorage.getItem(ACTIVE_TIMER_KEY) && !isRunning) return;
+  localStorage.setItem(TIMER_VIEW_KEY, 'overlay');
+  document.getElementById('timerOverlay').classList.add('active');
+  document.getElementById('zoomInBtn').style.display = 'none';
+}
+
+function zoomOutTimer() {
+  localStorage.setItem(TIMER_VIEW_KEY, 'main');
+  document.getElementById('timerOverlay').classList.remove('active');
+  document.getElementById('zoomInBtn').style.display =
+    (localStorage.getItem(ACTIVE_TIMER_KEY) || isRunning) ? 'block' : 'none';
+  showScreen('home');
+}
+
+function applyTimerView(state) {
+  updateOverlayTimer(state.label, document.getElementById('timerDisplay').textContent);
+  if (localStorage.getItem(TIMER_VIEW_KEY) !== 'main') {
+    zoomInTimer();
+  } else {
+    document.getElementById('timerOverlay').classList.remove('active');
+    document.getElementById('zoomInBtn').style.display = 'block';
+  }
+}
+
 function completeTimer(targetReal) {
   clearInterval(timerInterval);
   clearActiveTimer();
@@ -528,6 +578,8 @@ function completeTimer(targetReal) {
   document.getElementById('countdownInfo').textContent = 'Complete!';
   document.getElementById('btnStart').style.display = 'block';
   document.getElementById('btnPause').style.display = 'none';
+  document.getElementById('overlayTimerDisplay').textContent = '00:00:00';
+  document.getElementById('zoomInBtn').style.display = 'none';
 
   timersRun++;
   totalControlled += targetReal / 60;
@@ -546,6 +598,7 @@ function renderTimerTick(targetReal, speed, endAt) {
 
   document.getElementById('timerDisplay').textContent = formatClock(experienceRemaining);
   document.getElementById('countdownDisplay').textContent = formatClock(realRemaining);
+  document.getElementById('overlayTimerDisplay').textContent = formatClock(experienceRemaining);
 
   const progress = targetReal > 0 ? Math.min(100, (elapsedReal / targetReal) * 100) : 0;
   document.getElementById('countdownBar').style.width = (100 - progress) + '%';
@@ -569,13 +622,19 @@ function runTimerFromState(state) {
 
   clearInterval(timerInterval);
   renderTimerTick(targetReal, speed, endAt);
+  applyTimerView(state);
   if (!isRunning) return;
   timerInterval = setInterval(() => renderTimerTick(targetReal, speed, endAt), 50);
 }
 
 function restoreActiveTimer() {
   const raw = localStorage.getItem(ACTIVE_TIMER_KEY);
-  if (!raw) return;
+  if (!raw) {
+    localStorage.setItem(TIMER_VIEW_KEY, 'main');
+    document.getElementById('timerOverlay').classList.remove('active');
+    document.getElementById('zoomInBtn').style.display = 'none';
+    return;
+  }
 
   try {
     const state = JSON.parse(raw);
@@ -611,6 +670,7 @@ function startTimer() {
     endAt: Date.now() + Math.max(0, targetReal - elapsedReal) * 1000
   };
   saveActiveTimer(state);
+  localStorage.setItem(TIMER_VIEW_KEY, 'overlay');
   runTimerFromState(state);
 }
 
@@ -638,6 +698,9 @@ function resetTimer() {
   document.getElementById('countdownInfo').textContent = '';
   document.getElementById('btnStart').style.display = 'block';
   document.getElementById('btnPause').style.display = 'none';
+  updateOverlayTimer('', '00:00:00');
+  zoomOutTimer();
+  document.getElementById('zoomInBtn').style.display = 'none';
 }
 
 // ===== CONFETTI =====
